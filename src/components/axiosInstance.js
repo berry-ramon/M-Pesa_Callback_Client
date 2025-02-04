@@ -4,8 +4,7 @@ import Cookies from "js-cookie"; // Import js-cookie to access cookies
 
 // Create an instance of Axios
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000", // Centralized base URL for API
-  // baseURL: "https://m-pesa-callback-swnx.vercel.app",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000, // Set a timeout of 10 seconds (optional)
   headers: {
     "Content-Type": "application/json", // Default content type
