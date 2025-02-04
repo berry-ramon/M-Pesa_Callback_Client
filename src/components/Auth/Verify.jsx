@@ -1,8 +1,8 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { UserContext } from "../../context/UserContext";
-import axiosInstance from "../axiosInstance";
-import { RotatingLines } from "react-loader-spinner"; // Import the spinner
+import axiosInstance from "../components/axiosInstance";
+import { RotatingLines } from "react-loader-spinner";
+import { useAuth } from "../context/useAuth"; // Use the useAuth hook
 
 const Verify = () => {
   const { token } = useParams(); // Extract token from URL
@@ -11,7 +11,7 @@ const Verify = () => {
   );
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const navigate = useNavigate();
-  const { triggerToast } = useContext(UserContext);
+  const { login } = useAuth(); // Use the login function from AuthContext
 
   const handleVerify = async () => {
     setIsLoading(true); // Start loading
@@ -20,14 +20,18 @@ const Verify = () => {
     try {
       // Pass the token as part of the URL
       const response = await axiosInstance.get(`/api/auth/verify/${token}`);
+      const { token: newToken, user } = response.data;
+
+      // Use the login function to set the token and user data
+      await login(user.email, user.password); // Simulate login after verification
+
       setMessage(response.data.message);
-      triggerToast(response.data.message, "success");
       setTimeout(() => {
         navigate("/logs"); // Redirect to logs after verification
       }, 3000); // Redirect after 3 seconds
     } catch (err) {
       setMessage("Verification failed. Please try again.");
-      triggerToast("Verification failed. Please try again.", "error");
+      console.error("Verification error:", err);
     } finally {
       setIsLoading(false); // Stop loading
     }
